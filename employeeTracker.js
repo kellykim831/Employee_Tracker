@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const cTable = require("console.table");
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -17,9 +18,10 @@ var connection = mysql.createConnection({
 });
 
 // connect to the mysql server and sql database
-connection.connect(function(err) {
-    if (err) throw err;
-    //connection.end();
-    // run the start function after the connection is made to prompt the user
-    start();
-  });
+connection.connect(function (err) {
+  if (err) throw err;
+  //connection.end();
+  // run the start function after the connection is made to prompt the user
+  start();
+});
+
