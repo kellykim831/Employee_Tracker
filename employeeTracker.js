@@ -40,8 +40,8 @@ function startPrompt() {
         "Add Department",
         "Add Role",
         "Add Employee",
-        "Update Employee Role"
-      ]
+        "Update Employee Role",
+      "Exit"]
     })
     .then((answer) => {
       switch (answer.action) {
@@ -82,11 +82,12 @@ function startPrompt() {
 
 //View All Employees
 function viewAllEmp() {
+  console.log("Viewing All Employees\n");
   //Query to view All Employees
-  let query = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`
-
+  let query =
+    `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`
   // Query from connection
-  connection.query(query, function (err, res) {
+  connection.query(query, function(err, res) {
     if (err) throw err;
     
     console.table(res);
@@ -95,6 +96,58 @@ function viewAllEmp() {
     startPrompt();
   });
 }
+
+// Make a department array
+
+function viewAllEmpByDept() {
+  console.log("Viewing employees by department\n");
+
+  var query =
+    `SELECT d.id, d.name, r.salary AS budget FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id GROUP BY d.id, d.name`
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    const deptChoices = res.map(data => ({
+      value: data.id, name: data.name
+    }));
+
+    console.table(res);
+    console.log("All Departments Viewed\n");
+
+    deptPrompt(deptChoices);
+  });
+
+}
+
+function deptPrompt(deptChoices) {
+
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "departmentId",
+        message: "Which department would you like to choose?",
+        choices: deptChoices
+      }
+    ])
+    .then(function (answer) {
+      console.log("answer ", answer.departmentId);
+
+      var query =
+        `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON d.id = r.department_id WHERE d.id = ?`
+
+      connection.query(query, answer.departmentId, function (err, res) {
+        if (err) throw err;
+
+        console.table("response ", res);
+        console.log(res.affectedRows + "Employees are viewed!\n");
+
+        startPrompt();
+      });
+    });
+}
+
 
 
 
