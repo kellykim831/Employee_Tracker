@@ -96,17 +96,50 @@ function viewAllEmp() {
   });
 }
 function viewAllRoles() {
-  console.log("Viewing All Roles\n");
+  console.log("Viewing all roles\n");
   //Query to view All Roles
-  let query = `SELECT e.first_name, e.last_name, r.title AS Title FROM employee JOIN role ON employee.role_id = role.id`
+  let query = `SELECT d.id, d.name, r.salary AS budget FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id GROUP BY d.id, d.name`
+
   connection.query(query, function (err, res) {
     if (err) throw err;
 
-    console.table(res);
-    console.log("All roles viewed./n");
+    const roleChoices = res.map(data => ({
+      value: data.id, name: data.name
+    }));
 
-    startPrompt();
+    console.table(res);
+    console.log("All Roles Viewed\n");
+
+    rolePrompt(roleChoices);
   });
+
+}
+
+function rolePrompt(roleChoices) {
+
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "role",
+        message: "Which role would you like to choose?",
+        choices: roleChoices
+      }
+    ])
+    .then(function (answer) {
+      console.log("answer ", answer.role);
+
+      let query = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON d.id = r.department_id WHERE d.id = ?`
+
+      connection.query(query, answer.role, function (err, res) {
+        if (err) throw err;
+
+        console.table("response ", res);
+        console.log(res.affectedRows + "Employees are viewed!\n");
+
+        startPrompt();
+      });
+    });
 }
 
 // Make a department array
