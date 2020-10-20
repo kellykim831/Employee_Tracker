@@ -41,7 +41,7 @@ function startPrompt() {
         "Add Role",
         "Add Employee",
         "Update Employee Role",
-      "Exit"]
+        "Exit"]
     })
     .then((answer) => {
       switch (answer.action) {
@@ -54,7 +54,7 @@ function startPrompt() {
           break;
 
         case "View All Employees By Role":
-          viewAllEmpByRole();
+          viewAllRoles();
           break;
 
         case "Add Department":
@@ -84,26 +84,36 @@ function startPrompt() {
 function viewAllEmp() {
   console.log("Viewing All Employees\n");
   //Query to view All Employees
-  let query =
-    `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`
+  let query = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`
   // Query from connection
-  connection.query(query, function(err, res) {
+  connection.query(query, function (err, res) {
     if (err) throw err;
-    
+
     console.table(res);
     console.log("All Employees viewed./n");
 
     startPrompt();
   });
 }
+function viewAllRoles() {
+  console.log("Viewing All Roles\n");
+  //Query to view All Roles
+  let query = `SELECT e.first_name, e.last_name, r.title AS Title FROM employee JOIN role ON employee.role_id = role.id`
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    console.table(res);
+    console.log("All roles viewed./n");
+
+    startPrompt();
+  });
+}
 
 // Make a department array
-
 function viewAllEmpByDept() {
   console.log("Viewing employees by department\n");
 
-  var query =
-    `SELECT d.id, d.name, r.salary AS budget FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id GROUP BY d.id, d.name`
+  let query = `SELECT d.id, d.name, r.salary AS budget FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id GROUP BY d.id, d.name`
 
   connection.query(query, function (err, res) {
     if (err) throw err;
@@ -134,8 +144,7 @@ function deptPrompt(deptChoices) {
     .then(function (answer) {
       console.log("answer ", answer.departmentId);
 
-      var query =
-        `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON d.id = r.department_id WHERE d.id = ?`
+      let query = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON d.id = r.department_id WHERE d.id = ?`
 
       connection.query(query, answer.departmentId, function (err, res) {
         if (err) throw err;
@@ -147,7 +156,5 @@ function deptPrompt(deptChoices) {
       });
     });
 }
-
-
 
 
