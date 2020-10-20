@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const cTable = require("console.table");
+require("console.table");
+
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -35,11 +36,11 @@ function startPrompt() {
       choices: [
         "View All Employees",
         "View All Employees By Department",
-        "View All Employees By Manager",
+        "View All Employees By Role",
+        "Add Department",
+        "Add Role",
         "Add Employee",
-        "Remove Employee Role",
-        "Update Employee Role",
-        "Update Employee Manager"
+        "Update Employee Role"
       ]
     })
     .then((answer) => {
@@ -52,16 +53,28 @@ function startPrompt() {
           viewAllEmpByDept();
           break;
 
+        case "View All Employees By Role":
+          viewAllEmpByRole();
+          break;
+
+        case "Add Department":
+          addDept();
+          break;
+
         case "Add Employee":
           addEmp();
           break;
 
-        case "Remove Employee Role":
-          removeEmpRole();
+        case "Add Role":
+          addRole();
           break;
 
-        case "Update Employee Manager":
-          updateEmpMgr();
+        case "Update Employee Role":
+          updateEmpRole();
+          break;
+
+        case "Exit":
+          connection.exit();
           break;
       }
     });
@@ -70,18 +83,17 @@ function startPrompt() {
 //View All Employees
 function viewAllEmp() {
   //Query to view All Employees
-  let query = "SELECT e.id, e.first_name, e.last_name, role.title, department.name AS department, role.salary, concat(m.first_name, ' ' ,  m.last_name) AS manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role ON e.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY ID ASC";
+  let query = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`
 
   // Query from connection
   connection.query(query, function (err, res) {
-    if (err) return err;
-    console.log("\n");
+    if (err) throw err;
+    
     console.table(res);
-
+    console.log("All Employees viewed./n");
 
     startPrompt();
   });
-
 }
 
 
