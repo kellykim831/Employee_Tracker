@@ -273,7 +273,7 @@ function addRolePrompt(deptChoices) {
           if (err) throw err;
 
           console.table(res);
-          console.log("New Role Inserted");
+          console.log("New Role Inserted!");
 
           startPrompt();
         });
@@ -281,5 +281,29 @@ function addRolePrompt(deptChoices) {
     });
 }
 
+//Create department array
+function addDept() {
 
+  inquirer.prompt([
+    {
+      name: "name",
+      type: "input",
+      message: "What Department would you like to add?"
+    }
+  ]).then(function (res) {
+    var query = connection.query(
+      "INSERT INTO department SET ? ",
+      {
+        name: res.name
+
+      },
+      function (err) {
+        if (err) throw err
+        console.table(res);
+        console.log("New Department Added!")
+        startPrompt();
+      }
+    )
+  })
+}
 
