@@ -220,5 +220,66 @@ function addPrompt(roleChoices) {
     });
 }
 
+//Create role array
+function addRole() {
+
+  let query = `SELECT d.id, d.name, r.salary AS budget FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON d.id = r.department_id GROUP BY d.id, d.name`
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    const deptChoices = res.map(({ id, name }) => ({
+      value: id, name: `${id} ${name}`
+    }));
+
+    console.table(res);
+    console.log("Please answer the following:");
+
+    addRolePrompt(deptChoices);
+  });
+}
+
+function addRolePrompt(deptChoices) {
+
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "roleTitle",
+        message: "What is the Role Title of the Employee?"
+      },
+      {
+        type: "input",
+        name: "roleSalary",
+        message: "Insert Role Salary"
+      },
+      {
+        type: "list",
+        name: "departmentId",
+        message: "Which Department does your Employee Belong to?",
+        choices: deptChoices
+      },
+    ])
+    .then(function (answer) {
+
+      let query = `INSERT INTO role SET ?`
+
+      connection.query(query, {
+        title: answer.title,
+        salary: answer.salary,
+        department_id: answer.departmentId
+      },
+        function (err, res) {
+          if (err) throw err;
+
+          console.table(res);
+          console.log("New Role Inserted");
+
+          startPrompt();
+        });
+
+    });
+}
+
 
 
