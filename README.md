@@ -61,6 +61,11 @@ The following platforms were required to build this website:
 * [Inquirer](https://www.npmjs.com/package/inquirer)
 * [Console.Table](https://www.npmjs.com/package/console.table)
 
+## Deployed Link
+
+* [See Live Site](https://drive.google.com/file/d/1yFLu8LrLVE3oKIShedkO_lbtZA4tTzkA/view)
+
+
  ## Authors
 
 * **Kelly Kim** 
