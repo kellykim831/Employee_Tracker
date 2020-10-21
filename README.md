@@ -4,13 +4,13 @@
 The MySQL Employee Tracker assignment was to architect and build a solution for managing a company's employees using node, inquirer, and MySQL.
 <br> 
 The command-line application that I created allows the user to:
-<br>
+
  1) Add departments, roles, employees 
- <br>
+ 
  2) View departments, roles, employees
- <br>
+ 
  3) Update employee roles
- <br>
+ 
  4) Delete Employees
  
 ## Process
