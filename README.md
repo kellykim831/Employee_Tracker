@@ -20,7 +20,7 @@ The command-line application that I created allows the user to:
  Here is a GIF of my Employee Tracker that got generated from Git Bash:
 
  ![alttext](employeetracker.gif)
- Snippet of the department table created on MySQL workbench:
+ Snippet of the department table created on workbench:
  ![image](sql1.png)
  List of employees generated:
  ![image](sql2.png)
