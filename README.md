@@ -23,12 +23,16 @@ The command-line application that I created allows the user to:
  <br>
  Snippet of the department table created on workbench:
  ![image](sql1.png)
+ <br>
  List of employees generated:
  ![image](sql2.png)
+ <br>
  List of all the different roles displayed:
  ![image](sql3.png)
+ <br>
   Snippet of my seeds.sql to help me pre-populate my database:
  ![image](sql4.png)
+ <br>
  Database Schema containing 3 tables:
  ![image](emptracker2.png)
  
