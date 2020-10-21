@@ -41,7 +41,8 @@ function startPrompt() {
         "Add Role",
         "Add Employee",
         "Update Employee Role",
-        "Exit"]
+        "Delete an Employee",
+        "End"]
     })
     .then((answer) => {
       switch (answer.action) {
@@ -73,8 +74,12 @@ function startPrompt() {
           updateEmpRole();
           break;
 
-        case "Exit":
-          connection.exit();
+        case "Delete an Employee":
+          deleteEmp();
+          break;
+
+        case "End":
+          connection.end();
           break;
       }
     });
@@ -150,8 +155,6 @@ function deptPrompt(deptChoices) {
         if (err) throw err;
 
         console.table("response ", res);
-        console.log(res.affectedRows + "Employees are viewed!\n");
-
         startPrompt();
       });
     });
@@ -161,7 +164,7 @@ function deptPrompt(deptChoices) {
 function addEmp() {
   console.log("Adding new employee")
 
-  let query = `SELECT r.id, r.title, r.salary FROM role r`
+  let query = `SELECT role.id, role.title, role.salary FROM role`
 
   connection.query(query, function (err, res) {
     if (err) throw err;
@@ -207,7 +210,7 @@ function addPrompt(roleChoices) {
           first_name: answer.first_name,
           last_name: answer.last_name,
           role_id: answer.roleId,
-          manager_id: answer.managerId,
+          
         },
         function (err, res) {
           if (err) throw err;
@@ -265,8 +268,8 @@ function addRolePrompt(deptChoices) {
       let query = `INSERT INTO role SET ?`
 
       connection.query(query, {
-        title: answer.title,
-        salary: answer.salary,
+        title: answer.roleTitle,
+        salary: answer.roleSalary,
         department_id: answer.departmentId
       },
         function (err, res) {
@@ -307,3 +310,129 @@ function addDept() {
   })
 }
 
+//Create update employee function
+function updateEmpRole() {
+  empArray();
+
+}
+
+function empArray() {
+  console.log("Updating an employee");
+
+  let query = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    const empChoices = res.map(({ id, first_name, last_name }) => ({
+      value: id, name: `${first_name} ${last_name}`
+    }));
+
+    console.table(res);
+    console.log("Please answer the following:\n")
+
+    roleArray(empChoices);
+  });
+}
+
+function roleArray(empChoices) {
+  console.log("Updating role");
+
+  let query = `SELECT r.id, r.title, r.salary FROM role r`
+  let roleChoices;
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    roleChoices = res.map(({ id, title, salary }) => ({
+      value: id, title: `${title}`, salary: `${salary}`
+    }));
+
+    console.table(res);
+    console.log("Updating role\n")
+
+    empRolePrompt(empChoices, roleChoices);
+  });
+}
+
+function empRolePrompt(empChoices, roleChoices) {
+
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "employeeId",
+        message: "Which employee would you like to update?",
+        choices: empChoices
+      },
+      {
+        type: "list",
+        name: "roleId",
+        message: "What role do you want to update?",
+        choices: roleChoices
+      },
+    ])
+    .then(function (answer) {
+
+      let query = `UPDATE employee SET role_id = ? WHERE id = ?`
+      connection.query(query,
+        [answer.roleId,
+        answer.employeeId
+        ],
+        function (err, res) {
+          if (err) throw err;
+
+          console.table(res);
+          console.log(res.affectedRows + "Employee Has Been Updated Successfully!");
+
+          startPrompt();
+        });
+    });
+}
+
+//delete employee
+function deleteEmp() {
+  console.log("Deleting an employee");
+
+  let query = `SELECT e.id, e.first_name, e.last_name FROM employee e`
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    const deleteEmpChoices = res.map(({ id, first_name, last_name }) => ({
+      value: id, name: `${id} ${first_name} ${last_name}`
+    }));
+
+    console.table(res);
+    console.log("Deleting employee\n");
+
+    promptDelete(deleteEmpChoices);
+  });
+}
+
+//Chose which employee to delete
+
+function promptDelete(deleteEmpChoices) {
+
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "employeeId",
+        message: "Which employee do you want to remove?",
+        choices: deleteEmpChoices
+      }
+    ])
+    .then(function (answer) {
+
+      let query = `DELETE FROM employee WHERE ?`;
+      connection.query(query, { id: answer.employeeId }, function (err, res) {
+        if (err) throw err;
+
+        console.table(res);
+        console.log(res.affectedRows + "Deleted!\n");
+
+        startPrompt();
+      });
+    });
+}
