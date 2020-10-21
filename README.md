@@ -55,9 +55,6 @@ The following platforms were required to build this website:
 * [Inquirer](https://www.npmjs.com/package/inquirer)
 * [Console.Table](https://www.npmjs.com/package/console.table)
 
-## Deployed Link
-
-* [See Live Site](https://powerful-river-23113.herokuapp.com/)
  ## Authors
 
 * **Kelly Kim** 
