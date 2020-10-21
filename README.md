@@ -27,6 +27,9 @@ The MySQL Employee Tracker assignment was to architect and build a solution for 
  ![image](sql3.png)
   Snippet of my seeds.sql to help me pre-populate my database:
  ![image](sql4.png)
+ Database Schema containing 3 tables:
+ ![image](emptracker2.png)
+ 
 
  ## Installation
  You will need VS code and the dependencies are Inquirer, MySQL and Console.table.
